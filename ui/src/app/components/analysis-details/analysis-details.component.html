@@ -1,0 +1,15 @@
+<br>
+<div class="viewer">
+    <p>
+        <li class="list-unstyled" *ngFor="let analyis of analyses$ | async">
+            <span class="col-sm-3 pr-5">{{analyis.date | date:'dd-MM-yyyy hh:mm:ss.SSS'}}</span>
+            <span>{{analyis.description}}</span>
+        </li>
+    </p>
+    <!-- 
+    <p>
+        <li class="list-unstyled">
+            <span class="col-sm-3 pr-5">Wait...</span>
+        </li>
+    </p> -->
+</div>

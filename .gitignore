@@ -1,0 +1,7 @@
+*.7z
+*.dll
+**/bin
+**/obj
+**/dist
+**/node_modules
+**/.vs

@@ -1,0 +1,37 @@
+<div class="stepper-container col-sm-12 col-md-6">
+    <button type="button" class="btn btn-primary" (click)="restoreCleanState()"
+        [class.btn-secondary]="!enableCleanStateBtn">Clean State</button>
+    <div class="horizontal-line"></div>
+    <button type="button" class="btn btn-primary" (click)="openModal(fileUpload)"
+        [class.btn-secondary]="!enableStartAnalysisBtn">Start Analysis</button>
+    <div class="horizontal-line"></div>
+    <button type="button" class="btn btn-primary" (click)="createAntidote()" [class.btn-secondary]="!enableAntidoteGenBtn">Create Antidote</button>
+</div>
+
+
+<ng-template #fileUpload let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Upload Virus</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form>
+            <div class="form-group">
+                <label for="upload">Virus File</label>
+                <div class="input-group mb-3">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="chooseFile"
+                            (change)="fileSelected($event.target.files)">
+                        <label class="custom-file-label"
+                            for="chooseFile">{{!!selectedFile ? selectedFile.name : 'Choose file'}}</label>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Upload</button>
+    </div>
+</ng-template>
