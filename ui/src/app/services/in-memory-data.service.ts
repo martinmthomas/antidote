@@ -13,7 +13,7 @@ import { ChartData } from '../common/models/chart-data';
 export class InMemoryDataService implements InMemoryDbService {
 
   status: any[];
-  analyses: LogItem[];
+  logs: LogItem[];
   chartdata: ChartData[];
 
   constructor() { }
@@ -21,14 +21,14 @@ export class InMemoryDataService implements InMemoryDbService {
   createDb(reqInfo?: RequestInfo) {
 
     this.status = [TaskStatusEnum.None];
-    this.analyses = [];
+    this.logs = [];
     this.chartdata = [
       { labels: ['New Files', 'Registry Edits', 'File Edits'], values: [200, 600, 200] }
     ]
 
     const db = {
       status: this.status,
-      analyses: this.analyses,
+      logs: this.logs,
       chartdata: this.chartdata
     };
 
@@ -121,10 +121,10 @@ export class InMemoryDataService implements InMemoryDbService {
 
   private addLogItem(description: string) {
 
-    let latestAnalysis = this.analyses[this.analyses.length - 1]
+    let latestAnalysis = this.logs[this.logs.length - 1]
     let id = !!latestAnalysis ? latestAnalysis.id + 1 : 1;
 
-    this.analyses.push({ id: id, date: this.getCurrentDate(), description: description });
+    this.logs.push({ id: id, date: this.getCurrentDate(), description: description });
   }
 
   private getCurrentDate() {

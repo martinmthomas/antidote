@@ -7,7 +7,7 @@ namespace Antidote.Dashboard.API.Repositories
     public class TaskRepository : ITaskRepository
     {
         private readonly IMemoryCache _memoryCache;
-        private const string ANALYSES_CACHEKEY = "ANALYSES_CACHEKEY";
+        private const string LOGS_CACHEKEY = "LOGS_CACHEKEY";
         private const string STATUS_CACHEKEY = "STATUS_CACHEKEY";
 
         public TaskRepository(IMemoryCache memoryCache)
@@ -23,25 +23,25 @@ namespace Antidote.Dashboard.API.Repositories
         public void ResetStatus()
         {
             _memoryCache.Set(STATUS_CACHEKEY, TaskStatusEnum.None);
-            _memoryCache.Set(ANALYSES_CACHEKEY, new List<AnalysisItem>());
+            _memoryCache.Set(LOGS_CACHEKEY, new List<LogItem>());
         }
 
         public void SetStatus(TaskStatusEnum status, string description)
         {
             _memoryCache.Set(STATUS_CACHEKEY, status);
 
-            _memoryCache.TryGetValue<List<AnalysisItem>>(ANALYSES_CACHEKEY, out var analyses);
-            if (analyses == null)
-                analyses = new List<AnalysisItem>();
+            _memoryCache.TryGetValue<List<LogItem>>(LOGS_CACHEKEY, out var logs);
+            if (logs == null)
+                logs = new List<LogItem>();
 
-            analyses.Add(new AnalysisItem(description));
-            _memoryCache.Set(ANALYSES_CACHEKEY, analyses);
+            logs.Add(new LogItem(description));
+            _memoryCache.Set(LOGS_CACHEKEY, logs);
         }
 
-        public IList<AnalysisItem> GetAnalyses()
+        public IList<LogItem> GetLogs()
         {
-            _memoryCache.TryGetValue<List<AnalysisItem>>(ANALYSES_CACHEKEY, out var analyses);
-            return analyses;
+            _memoryCache.TryGetValue<List<LogItem>>(LOGS_CACHEKEY, out var logs);
+            return logs;
         }
     }
 }

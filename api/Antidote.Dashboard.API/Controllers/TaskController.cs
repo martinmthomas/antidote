@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading.Tasks;
 
 namespace Antidote.Dashboard.API.Controllers
 {
@@ -20,16 +21,19 @@ namespace Antidote.Dashboard.API.Controllers
         private readonly IConfiguration _configuration;
         private readonly ITaskRepository _taskRepository;
         private readonly IScriptService _scriptService;
+        private readonly IAnalysisRepository _analysisRepository;
 
         public TaskController(ILogger<TaskController> logger,
             IConfiguration configuration,
             ITaskRepository taskRepository,
-            IScriptService scriptService)
+            IScriptService scriptService,
+            IAnalysisRepository analysisRepository)
         {
             _logger = logger;
             _configuration = configuration;
             _taskRepository = taskRepository;
             _scriptService = scriptService;
+            _analysisRepository = analysisRepository;
         }
 
         [HttpGet]
@@ -49,17 +53,34 @@ namespace Antidote.Dashboard.API.Controllers
         }
 
         [HttpGet]
-        [Route("analyses")]
-        public IActionResult GetAnalyses()
+        [Route("logs")]
+        public IActionResult GetLogs()
         {
             try
             {
-                var analyses = _taskRepository.GetAnalyses();
-                return new OkObjectResult(analyses);
+                var logs = _taskRepository.GetLogs();
+                return new OkObjectResult(logs);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Getting Analyses failed");
+                _logger.LogError(ex, "Getting Logs failed");
+            }
+
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+
+        [HttpGet]
+        [Route("analyses")]
+        public async Task<IActionResult> GetAnalyses([FromQuery] bool loadLatest)
+        {
+            try
+            {
+                var analysisData = await _analysisRepository.GetAnalysisDataAsync(loadLatest);
+                return new OkObjectResult(analysisData);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Getting Analysis data failed");
             }
 
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);

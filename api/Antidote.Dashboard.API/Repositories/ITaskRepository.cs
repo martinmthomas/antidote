@@ -8,6 +8,6 @@ namespace Antidote.Dashboard.API.Repositories
         void ResetStatus();
         TaskStatusEnum GetStatus();
         void SetStatus(TaskStatusEnum status, string description);
-        IList<AnalysisItem> GetAnalyses();
+        IList<LogItem> GetLogs();
     }
 }

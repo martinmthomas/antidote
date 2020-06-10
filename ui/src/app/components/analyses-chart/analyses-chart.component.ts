@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { ChartOptions, ChartType } from 'chart.js';
 import { Label } from 'ng2-charts';
 import * as pluginDataLabels from 'chartjs-plugin-datalabels';
-import { TaskService } from 'src/app/services/task.service';
-import { tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { AnalysisItem } from 'src/app/common/analysis-item';
 
 @Component({
   selector: 'app-analyses-chart',
@@ -12,11 +12,13 @@ import { tap } from 'rxjs/operators';
 })
 export class AnalysesChartComponent implements OnInit {
 
+  @Input() analysisItems$: Observable<AnalysisItem[]>;
+
   public pieChartOptions: ChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
     legend: {
-      position: 'top',
+      position: 'top', labels: { fontColor: '#111' }
     },
     plugins: {
       datalabels: {
@@ -24,36 +26,23 @@ export class AnalysesChartComponent implements OnInit {
           const label = ctx.chart.data.datasets[0].data[ctx.dataIndex];
           return label;
         },
-      },
+        color: '#111'
+      }
     }
   };
-  public pieChartLabels: Label[] = ['Empty'];
-  public pieChartData: number[] = [100];
+  @Input() public pieChartLabels: Label[] = ['Empty'];
+  @Input() public pieChartData: number[] = [100];
   public pieChartType: ChartType = 'pie';
   public pieChartLegend = true;
   public pieChartPlugins = [pluginDataLabels];
   public pieChartColors = [
     {
-      backgroundColor: ['rgba(255,0,0,0.3)', 'rgba(0,255,0,0.3)', 'rgba(0,0,255,0.3)'],
+      backgroundColor: ['#415a73', '#65e237', '#4f508f', '#387870', '#a09209', '#de64e9', '#9e8e71', '#cfe319', '#a119ca', '#12856c'],
     },
   ];
 
-  constructor(private taskService: TaskService) { }
+  constructor() { }
 
   ngOnInit() {
-    this.taskService.getChartData()
-      .pipe(
-        tap(data => {
-          this.pieChartLabels = data.labels;
-          this.pieChartData = data.values;
-        })
-      )
-      .subscribe();
   }
-
-  // addSlice() {
-  //   this.pieChartLabels.push(['Line 1', 'Line 2', 'Line 3']);
-  //   this.pieChartData.push(400);
-  //   this.pieChartColors[0].backgroundColor.push('rgba(196,79,244,0.3)');
-  // }
 }
