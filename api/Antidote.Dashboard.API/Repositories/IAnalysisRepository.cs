@@ -9,5 +9,9 @@ namespace Antidote.Dashboard.API.Repositories
         Task CreateLogFileAsync(string analysisName, List<string> logs);
 
         Task<Analysis> GetAnalysisDataAsync();
+
+        Task<List<string>> GetMachinesAsync();
+
+        Task<string> GetScannerNameAsync(string analysisName);
     }
 }

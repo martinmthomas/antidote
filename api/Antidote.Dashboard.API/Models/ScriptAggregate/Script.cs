@@ -5,11 +5,13 @@ namespace Antidote.Dashboard.API.Models.ScriptAggregate
 {
     public class Script
     {
-        private const string ScriptFileNameKey = "ScriptFileName", SampleNameKey = "SampleName";
+        private const string ScriptFileNameKey = "ScriptFileName";
 
         public string ToolName => "python";
 
         public int TimeoutInMs { get; protected set; }
+
+        public string SampleName { get; private set; }
 
         public Dictionary<string, string> Arguments { get; protected set; } = new Dictionary<string, string>();
 
@@ -17,23 +19,19 @@ namespace Antidote.Dashboard.API.Models.ScriptAggregate
             .Select(arg => arg.Value)
             .Aggregate((arg1, arg2) => arg1 + " " + arg2);
 
-        public string SampleNameWithoutExtension
-        {
-            get
-            {
-                var sampleName = Arguments[SampleNameKey];
-                if (sampleName.Contains('.'))
-                    return sampleName.Substring(0, sampleName.LastIndexOf('.'));
-
-                return sampleName;
-            }
-        }
-
         public Script(ScriptOptions scriptOptions, string sampleName)
         {
             TimeoutInMs = scriptOptions.TimeoutInMs;
             Arguments.Add(ScriptFileNameKey, scriptOptions.ScriptFileName);
-            Arguments.Add(SampleNameKey, sampleName);
+            SampleName = RemoveExtensionFromSampleName(sampleName);
+        }
+
+        private string RemoveExtensionFromSampleName(string sampleName)
+        {
+            if (sampleName.Contains('.'))
+                return sampleName.Substring(0, sampleName.LastIndexOf('.'));
+
+            return sampleName;
         }
     }
 }

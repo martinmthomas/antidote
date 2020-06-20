@@ -13,6 +13,7 @@ namespace Antidote.Dashboard.API.Repositories
     {
         private const string LOGFILESUFFIX = "_log.txt";
         private const string REPORTFILESUFFIX = "_analysis.log";
+        private const string SCANNERFILESUFFIX = "_scanner.exe";
 
         private readonly IConfiguration _configuration;
 
@@ -53,6 +54,8 @@ namespace Antidote.Dashboard.API.Repositories
         private string GetReportFilePath(string analysisName) => GetFilePath(analysisName + REPORTFILESUFFIX);
 
         private string GetLogFilePath(string analysisName) => GetFilePath(analysisName + LOGFILESUFFIX);
+
+        private string GetScannerFilePath(string analysisName) => GetFilePath(analysisName + SCANNERFILESUFFIX);
 
         private string GetFilePath(string fileName) => new DirectoryInfo(OutputFolder).GetFiles(fileName)[0].FullName;
 
@@ -112,6 +115,27 @@ namespace Antidote.Dashboard.API.Repositories
             }
 
             return logs;
+        }
+
+        public async Task<List<string>> GetMachinesAsync()
+        {
+            var machinesListFilePath = _configuration.GetSection("MachinesListFile").Get<string>();
+            using var fileReader = new StreamReader(machinesListFilePath);
+
+            return (await fileReader.ReadToEndAsync())
+                .Split(Environment.NewLine)
+                .Where(line => !string.IsNullOrWhiteSpace(line))
+                .Select(line => line.Split(',')[0])
+                .ToList();
+        }
+
+        public async Task<string> GetScannerNameAsync(string analysisName)
+        {
+            var scannerFilePath = GetScannerFilePath(analysisName);
+            if (!string.IsNullOrWhiteSpace(scannerFilePath))
+                return analysisName + SCANNERFILESUFFIX;
+
+            return "";
         }
     }
 }

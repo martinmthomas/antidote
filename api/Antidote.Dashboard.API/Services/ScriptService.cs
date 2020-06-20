@@ -47,7 +47,7 @@ namespace Antidote.Dashboard.API.Services
                 throw new System.Exception($"Aborting the script. Process did not complete in {script.TimeoutInMs} milliseconds.");
 
             if (_logs.Count > 0)
-                await _analysisRepository.CreateLogFileAsync(script.SampleNameWithoutExtension, _logs);
+                await _analysisRepository.CreateLogFileAsync(script.SampleName, _logs);
         }
 
         private async void ProcessConsoleOutput(object sender, DataReceivedEventArgs e)

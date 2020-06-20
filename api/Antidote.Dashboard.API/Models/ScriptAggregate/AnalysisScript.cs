@@ -2,8 +2,9 @@
 {
     public class AnalysisScript : Script
     {
-        public AnalysisScript(ScriptOptions scriptOptions, string sampleName) : base(scriptOptions, sampleName)
+        public AnalysisScript(ScriptOptions scriptOptions, string fileName) : base(scriptOptions, fileName)
         {
+            Arguments.Add("SampleFileName", fileName);
         }
     }
 }
