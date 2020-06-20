@@ -63,6 +63,10 @@ export class AnalysisDetailsComponent implements OnInit {
   public handleNewLogItems(context: AnalysisDetailsComponent, log: string) {
     if (!!log) {
       context.logs.push(log);
+      setTimeout(() => {
+        var viewerContent = document.getElementById('viewerContent');
+        viewerContent.scrollTop = viewerContent.scrollHeight;
+      }, 1);
     }
   }
 

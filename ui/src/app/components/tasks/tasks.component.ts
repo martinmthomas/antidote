@@ -12,6 +12,7 @@ import { tap, switchMap } from 'rxjs/operators';
 export class TasksComponent {
 
   selectedFile: File;
+  isInProgress: boolean = false;
 
   constructor(private taskService: TaskService, private modalService: NgbModal) { }
 
@@ -31,7 +32,11 @@ export class TasksComponent {
   }
 
   startAnalysis() {
+    this.isInProgress = true;
     this.taskService.startAnalysis(this.selectedFile.name)
+      .pipe(
+        tap(_ => this.isInProgress = false)
+      )
       .subscribe();
   }
 }

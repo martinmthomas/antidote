@@ -16,13 +16,14 @@
             (click)="selectButton('chart')">Chart</button>
     </span>
 
-    <div class="mt-3">
+    <div id="viewerContent" class="mt-3 viewer-content">
         <p *ngIf="selectedBtn === 'logs'">
             <li class="list-unstyled" *ngFor="let log of logs">
                 <span>{{log}}</span>
             </li>
         </p>
-        <div *ngIf="analysisInProgress" class="rotating-line">&nbsp;</div>
+
+        <div *ngIf="analysisInProgress" class="rotating-line ml-2">&nbsp;</div>
 
         <p>
             <li class="list-unstyled mb-2" *ngFor="let analysisItem of filteredAnalysisItems">
