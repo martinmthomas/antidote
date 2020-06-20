@@ -3,7 +3,7 @@ import { ChartOptions, ChartType } from 'chart.js';
 import { Label } from 'ng2-charts';
 import * as pluginDataLabels from 'chartjs-plugin-datalabels';
 import { Observable } from 'rxjs';
-import { AnalysisItem } from 'src/app/common/analysis-item';
+import { ReportItem } from 'src/app/common/report-item';
 
 @Component({
   selector: 'app-analyses-chart',
@@ -12,7 +12,7 @@ import { AnalysisItem } from 'src/app/common/analysis-item';
 })
 export class AnalysesChartComponent implements OnInit {
 
-  @Input() analysisItems$: Observable<AnalysisItem[]>;
+  @Input() analysisItems$: Observable<ReportItem[]>;
 
   public pieChartOptions: ChartOptions = {
     responsive: true,

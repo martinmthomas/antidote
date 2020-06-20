@@ -1,5 +1,6 @@
 using Antidote.Dashboard.API.Repositories;
 using Antidote.Dashboard.API.Services;
+using Antidote.Dashboard.API.SignalrHub;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -20,12 +21,13 @@ namespace Antidote.Dashboard.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSignalR();
             services.AddControllers();
 
             services.AddMemoryCache();
 
-            services.AddSingleton<IScriptService, ScriptService>();
-            services.AddSingleton<ITaskRepository, TaskRepository>();
+            services.AddTransient<IScriptService, ScriptService>();
+
             services.AddSingleton<IAnalysisRepository, AnalysisRepository>();
         }
 
@@ -37,11 +39,16 @@ namespace Antidote.Dashboard.API
                 app.UseDeveloperExceptionPage();
             }
 
+            var appUrl = Configuration.GetSection("AppUrl").Get<string>();
+            if (env.IsDevelopment())
+                appUrl = "http://localhost:4200";
+
             app.UseCors(policy =>
             {
-                policy.AllowAnyOrigin();
+                policy.WithOrigins(appUrl);
                 policy.AllowAnyMethod();
                 policy.AllowAnyHeader();
+                policy.AllowCredentials();
             });
 
             app.UseRouting();
@@ -51,6 +58,7 @@ namespace Antidote.Dashboard.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<AnalysisHub>("/signalr");
             });
         }
     }

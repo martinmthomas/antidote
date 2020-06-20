@@ -1,9 +1,10 @@
 ﻿using Antidote.Dashboard.API.Models.ScriptAggregate;
+using System.Threading.Tasks;
 
 namespace Antidote.Dashboard.API.Services
 {
     public interface IScriptService
     {
-        public string Execute(Script script);
+        Task ExecuteAsync(Script script);
     }
 }

@@ -1,23 +1,28 @@
 <br>
 <div class="viewer">
     <button type="button" class="btn btn-sm bg-light mr-2"
-        [ngClass]="(selectedKey === 'logs') ? 'btn-outline-primary': 'btn-outline-dark'"
-        (click)="selectKey('logs')">Logs</button>
-    |
-    <button *ngFor="let key of keys$ | async" type="button" class="btn btn-sm bg-light mx-2"
-        [ngClass]="(selectedKey === key) ? 'btn-outline-primary': 'btn-outline-dark'"
-        (click)="selectKey(key)">{{key}}</button>
-    |
-    <button type="button" class="btn btn-sm bg-light btn-outline-warning ml-2"
-        (click)="selectKey('chart')">Chart</button>
+        [ngClass]="(selectedBtn === 'logs') ? 'btn-outline-primary': 'btn-outline-dark'"
+        (click)="selectButton('logs')">Logs</button>
+
+    <span *ngIf="!!buttonNames && buttonNames.length > 0">
+        |
+
+        <button *ngFor="let buttonName of buttonNames" type="button" class="btn btn-sm bg-light mx-2"
+            [ngClass]="(selectedBtn === buttonName) ? 'btn-outline-primary': 'btn-outline-dark'"
+            (click)="selectButton(buttonName)">{{buttonName}}</button>
+        |
+
+        <button type="button" class="btn btn-sm bg-light btn-outline-warning ml-2"
+            (click)="selectButton('chart')">Chart</button>
+    </span>
 
     <div class="mt-3">
-        <p *ngIf="selectedKey === 'logs'">
-            <li class="list-unstyled" *ngFor="let log of logs$ | async">
-                <span class="col-sm-3 pr-5">{{log.date | date:'dd-MM-yyyy hh:mm:ss.SSS'}}</span>
-                <span>{{log.description}}</span>
+        <p *ngIf="selectedBtn === 'logs'">
+            <li class="list-unstyled" *ngFor="let log of logs">
+                <span>{{log}}</span>
             </li>
         </p>
+        <div *ngIf="analysisInProgress" class="rotating-line">&nbsp;</div>
 
         <p>
             <li class="list-unstyled mb-2" *ngFor="let analysisItem of filteredAnalysisItems">
@@ -27,7 +32,7 @@
 
         <p>
             <app-analyses-chart [pieChartLabels]="pieChartLabels" [pieChartData]="pieChartData"
-                *ngIf="selectedKey === 'chart'">
+                *ngIf="selectedBtn === 'chart'">
             </app-analyses-chart>
         </p>
     </div>

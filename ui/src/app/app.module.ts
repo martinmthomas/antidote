@@ -9,8 +9,6 @@ import { AnalysisDetailsComponent } from './components/analysis-details/analysis
 import { TasksComponent } from './components/tasks/tasks.component';
 import { HomeComponent } from './components/home/home.component';
 import { HttpClientModule } from '@angular/common/http';
-import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
-import { InMemoryDataService }  from './services/in-memory-data.service';
 import { ChartsModule } from 'ng2-charts';
 import { AnalysesChartComponent } from './components/analyses-chart/analyses-chart.component';
 
@@ -28,9 +26,6 @@ import { AnalysesChartComponent } from './components/analyses-chart/analyses-cha
     AppRoutingModule,
     NgbModule,
     HttpClientModule,
-    // HttpClientInMemoryWebApiModule.forRoot(
-    //   InMemoryDataService, { dataEncapsulation: false }
-    // ),
     ChartsModule
   ],
   providers: [],

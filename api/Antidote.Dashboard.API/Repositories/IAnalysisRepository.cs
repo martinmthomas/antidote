@@ -6,6 +6,8 @@ namespace Antidote.Dashboard.API.Repositories
 {
     public interface IAnalysisRepository
     {
-        Task<List<AnalysisItem>> GetAnalysisDataAsync(bool loadLatest);
+        Task CreateLogFileAsync(string analysisName, List<string> logs);
+
+        Task<Analysis> GetAnalysisDataAsync();
     }
 }

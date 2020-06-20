@@ -1,52 +1,26 @@
-import { Component, OnInit } from '@angular/core';
-import { TaskStatusEnum } from 'src/app/common/models/task-status-enum';
+import { Component } from '@angular/core';
 import { TaskService } from 'src/app/services/task.service';
-import { tap } from 'rxjs/operators';
-import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Subject } from 'rxjs';
+import { tap, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-tasks',
   templateUrl: './tasks.component.html',
   styleUrls: ['./tasks.component.scss']
 })
-export class TasksComponent implements OnInit {
-
-  taskStatus: TaskStatusEnum;
-
-  public get enableCleanStateBtn(): boolean {
-    return this.taskStatus == TaskStatusEnum.None || this.taskStatus == TaskStatusEnum.AntidoteGenCompleted;
-  }
-
-  public get enableStartAnalysisBtn(): boolean {
-    return this.taskStatus == TaskStatusEnum.CleanStateCompleted;
-  }
-
-  public get enableAntidoteGenBtn(): boolean {
-    return this.taskStatus == TaskStatusEnum.AnalysisCompleted;
-  }
+export class TasksComponent {
 
   selectedFile: File;
 
   constructor(private taskService: TaskService, private modalService: NgbModal) { }
 
-  ngOnInit(): void {
-    this.taskService.getStatus()
-      .pipe(
-        tap(status => this.taskStatus = status)
-      )
-      .subscribe();
-  }
-
-  restoreCleanState() {
-    this.taskService.restoreCleanState().subscribe();
-  }
-
   openModal(fileUpload) {
     let _self = this;
     this.modalService.open(fileUpload)
       .result.then(
-        result => { _self.uploadFile() },
-        reject => { }
+        () => { _self.startAnalysis() },
+        () => { }
       );
   }
 
@@ -56,12 +30,8 @@ export class TasksComponent implements OnInit {
     }
   }
 
-  uploadFile() {
-    this.taskService.uploadVirus(this.selectedFile.name)
+  startAnalysis() {
+    this.taskService.startAnalysis(this.selectedFile.name)
       .subscribe();
-  }
-
-  createAntidote() {
-    this.taskService.createAntidote().subscribe();
   }
 }

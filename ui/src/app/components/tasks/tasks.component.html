@@ -1,17 +1,11 @@
-<div class="stepper-container col-sm-12 col-md-6">
-    <button type="button" class="btn btn-primary" (click)="restoreCleanState()"
-        [class.btn-secondary]="!enableCleanStateBtn">Clean State</button>
-    <div class="horizontal-line"></div>
-    <button type="button" class="btn btn-primary" (click)="openModal(fileUpload)"
-        [class.btn-secondary]="!enableStartAnalysisBtn">Start Analysis</button>
-    <div class="horizontal-line"></div>
-    <button type="button" class="btn btn-primary" (click)="createAntidote()" [class.btn-secondary]="!enableAntidoteGenBtn">Create Antidote</button>
+<div class="col-sm-12">
+    <button type="button" class="btn btn-primary" (click)="openModal(fileUpload)">Start Analysis</button>
 </div>
 
 
 <ng-template #fileUpload let-modal>
     <div class="modal-header">
-        <h4 class="modal-title" id="modal-basic-title">Upload Virus</h4>
+        <h4 class="modal-title" id="modal-basic-title">Upload Virus Sample</h4>
         <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
             <span aria-hidden="true">&times;</span>
         </button>

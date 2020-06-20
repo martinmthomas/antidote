@@ -12,3 +12,30 @@
     word-wrap: break-word;
     border: solid;
 }
+
+.rotating-line {
+    height: 18px;
+    width: 1px;
+    border-right-style: solid;
+    border-color: #58d258;
+    animation: rotating 1s infinite linear;
+}
+
+@keyframes rotating {
+    0% {
+        transform-origin: 2px;
+        transform: rotate(0deg);
+    }
+    20% {
+        transform-origin: 2px;
+        transform: rotate(0deg);
+    }
+    40% {
+        transform-origin: 2px;
+        transform: rotate(0deg);
+    }
+    100% {
+        transform-origin: 2px;
+        transform: rotate(359deg);
+    }
+}

@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { InMemoryDataService } from './in-memory-data.service';
+import { SignalRServiceService } from './signal-r.service';
 
-describe('InMemoryDataService', () => {
-  let service: InMemoryDataService;
+describe('SignalRServiceService', () => {
+  let service: SignalRServiceService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(InMemoryDataService);
+    service = TestBed.inject(SignalRServiceService);
   });
 
   it('should be created', () => {

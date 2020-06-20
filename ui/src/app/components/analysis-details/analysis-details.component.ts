@@ -1,82 +1,117 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { TaskService } from 'src/app/services/task.service';
-import { LogItem } from 'src/app/common/models/log-item';
-import { Observable, of, ObservableLike, Subject } from 'rxjs';
-import { AnalysisItem } from 'src/app/common/analysis-item';
-import { map, tap, filter, share } from 'rxjs/operators';
-import { TaskStatusEnum } from 'src/app/common/models/task-status-enum';
+import { Observable } from 'rxjs';
+import { ReportItem } from 'src/app/common/report-item';
+import { tap, filter, switchMap } from 'rxjs/operators';
 import { Label } from 'ng2-charts';
+import { SignalRService } from 'src/app/services/signal-r.service';
+import { Analysis } from 'src/app/common/models/analysis';
 
 @Component({
   selector: 'app-analysis-details',
   templateUrl: './analysis-details.component.html',
   styleUrls: ['./analysis-details.component.scss']
 })
-export class AnalysisDetailsComponent implements OnInit, OnDestroy {
+export class AnalysisDetailsComponent implements OnInit {
 
-  logs$: Observable<LogItem[]>;
-  analysisItems$: Observable<AnalysisItem[]>;
-  analysisItemsSubject: Subject<AnalysisItem[]> = new Subject<AnalysisItem[]>();
-  analysisItems: AnalysisItem[];
-  filteredAnalysisItems: AnalysisItem[];
-  keys$: Observable<string[]>;
-  selectedKey: string = 'logs';
+  public name: string = '';
+  public logs: string[] = [];
+  public report: ReportItem[];
+  public filteredAnalysisItems: ReportItem[];
+
+  public buttonNames: string[];
+  public selectedBtn: string = 'logs';
+
+  public analysisInProgress: boolean = false;
 
   public pieChartLabels: Label[] = ['Empty'];
   public pieChartData: number[] = [100];
 
-  constructor(private taskService: TaskService) {
-  }
+  constructor(private taskService: TaskService, private signalrService: SignalRService) { }
 
   ngOnInit(): void {
-    this.logs$ = this.taskService.getLogs();
-
-    this.initAnalysisData(true);
-
-    this.taskService.getStatus()
+    this.taskService.isAnalysisInProgress()
       .pipe(
-        filter(status => status === TaskStatusEnum.AnalysisCompleted),
-        tap(_ => this.initAnalysisData(true))
-      )
+        tap(progress => this.taskTriggered(progress)))
       .subscribe();
+
+    this.signalrService.GetNewLogItems(this.handleNewLogItems, this);
   }
 
-  initAnalysisData(loadLatest: boolean) {
-    let analysis$ = this.taskService.getAnalysisData(loadLatest);
+  private taskTriggered(inProgress: boolean) {
+    this.analysisInProgress = inProgress;
 
-    this.keys$ = analysis$.pipe(
-      map(items => items.map(item => item.key)),
-      map(items => [...new Set(items)].sort((a, b) => a.localeCompare(b))), // retrieve only unique values
-    );
-
-    let itemMaps: { [key: string]: number } = {};
-    analysis$.pipe(
-      tap(items => this.analysisItems = items),
-      map(items => items.map(item => item.key + '-' + item.data[0])),
-      map(keys => keys.sort((a, b) => a.localeCompare(b))),
-      tap(keys => keys.forEach(key => itemMaps[key] = !!itemMaps[key] ? (itemMaps[key] + 1) : 1)),
-      tap(_ => {
-        this.pieChartLabels = [];
-        this.pieChartData = [];
-        for (let key in itemMaps) {
-          this.pieChartLabels.push(key);
-          this.pieChartData.push(itemMaps[key]);
-        }
-      }))
-      .subscribe();
+    if (inProgress)
+      this.reset();
+    else {
+      this.taskService.getAnalysisData()
+        .pipe(
+          tap(analysis => this.initAnalysisData(analysis))
+        )
+        .subscribe();
+    }
   }
 
-  selectKey(key: string) {
-    this.selectedKey = key;
-    if (key !== 'logs' && key !== 'chart')
+  private reset() {
+    this.logs = [];
+    this.report = [];
+    this.filteredAnalysisItems = [];
+    this.buttonNames = [];
+    this.selectedBtn = 'logs';
+  }
+
+  public handleNewLogItems(context: AnalysisDetailsComponent, log: string) {
+    if (!!log) {
+      context.logs.push(log);
+    }
+  }
+
+  private initAnalysisData(analysis: Analysis) {
+    this.name = analysis.name;
+    this.logs = analysis.logs;
+    this.report = analysis.report;
+
+    var reportKeys = this.report
+      .map(item => item.key)
+      .sort((key1, key2) => key1.localeCompare(key2));
+
+    this.buttonNames = [...new Set(reportKeys)]; //gets unique items from the array
+
+    this.initPieChart();
+  }
+
+  private getChartData() {
+    let chartData: { [key: string]: number } = {};
+
+    this.report
+      .map(item => item.key + '-' + item.data[0])
+      .sort((key1, key2) => key1.localeCompare(key2))
+      .forEach(key => chartData[key] = !!chartData[key] ? (chartData[key] + 1) : 1);
+
+    return chartData;
+  }
+
+  private initPieChart() {
+    var chartData = this.getChartData();
+
+    this.pieChartLabels = [];
+    this.pieChartData = [];
+
+    for (let key in chartData) {
+      this.pieChartLabels.push(key);
+      this.pieChartData.push(chartData[key]);
+    }
+  }
+
+  public selectButton(btnName: string) {
+    this.selectedBtn = btnName;
+    if (btnName !== 'logs' && btnName !== 'chart')
       this.filteredAnalysisItems = this.getFilteredAnalysisItems();
     else
       this.filteredAnalysisItems = [];
   }
 
-  getFilteredAnalysisItems() {
-    return this.analysisItems.filter(item => item.key === this.selectedKey);
+  private getFilteredAnalysisItems() {
+    return this.report.filter(item => item.key === this.selectedBtn);
   }
-
-  ngOnDestroy(): void { }
 }
