@@ -6,6 +6,7 @@ import { tap, filter, switchMap } from 'rxjs/operators';
 import { Label } from 'ng2-charts';
 import { SignalRService } from 'src/app/services/signal-r.service';
 import { Analysis } from 'src/app/common/models/analysis';
+import { SignalRArgument } from 'src/app/common/models/signal-r-argument';
 
 @Component({
   selector: 'app-analysis-details',
@@ -27,15 +28,19 @@ export class AnalysisDetailsComponent implements OnInit {
   public pieChartLabels: Label[] = ['Empty'];
   public pieChartData: number[] = [100];
 
+  public selectedTab: string = 'analysis';
+
   constructor(private taskService: TaskService, private signalrService: SignalRService) { }
 
   ngOnInit(): void {
+    this.taskTriggered(false);
+
     this.taskService.isAnalysisInProgress()
       .pipe(
         tap(progress => this.taskTriggered(progress)))
       .subscribe();
 
-    this.signalrService.GetNewLogItems(this.handleNewLogItems, this);
+    this.signalrService.GetNewLogItems('CreateAnalysis', this.handleNewLogItems, this);
   }
 
   private taskTriggered(inProgress: boolean) {
@@ -53,6 +58,7 @@ export class AnalysisDetailsComponent implements OnInit {
   }
 
   private reset() {
+    this.name = '';
     this.logs = [];
     this.report = [];
     this.filteredAnalysisItems = [];
@@ -60,7 +66,9 @@ export class AnalysisDetailsComponent implements OnInit {
     this.selectedBtn = 'logs';
   }
 
-  public handleNewLogItems(context: AnalysisDetailsComponent, log: string) {
+  public handleNewLogItems(context: AnalysisDetailsComponent, argument: SignalRArgument<string>) {
+    let log = argument.data;
+    
     if (!!log) {
       context.logs.push(log);
       setTimeout(() => {

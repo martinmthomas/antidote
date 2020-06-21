@@ -1,40 +1,53 @@
 <br>
+<ul class="tabs">
+    <li class="tab-item" [class.active]="selectedTab === 'analysis'" (click)="selectedTab = 'analysis'">
+        <a href="#">Analysis [ {{name}} ]</a>
+    </li>
+    <li class="tab-item" [class.active]="selectedTab === 'systemScan'" (click)="selectedTab = 'systemScan'">
+        <a href="#">System Scan</a>
+    </li>
+</ul>
+
 <div class="viewer">
-    <button type="button" class="btn btn-sm bg-light mr-2"
-        [ngClass]="(selectedBtn === 'logs') ? 'btn-outline-primary': 'btn-outline-dark'"
-        (click)="selectButton('logs')">Logs</button>
+    <div class="Analysis" *ngIf="selectedTab === 'analysis'">
+        <button type="button" class="btn btn-sm bg-light mr-2"
+            [ngClass]="(selectedBtn === 'logs') ? 'btn-outline-primary': 'btn-outline-dark'"
+            (click)="selectButton('logs')">Logs</button>
 
-    <span *ngIf="!!buttonNames && buttonNames.length > 0">
-        |
+        <span *ngIf="!!buttonNames && buttonNames.length > 0">
+            |
 
-        <button *ngFor="let buttonName of buttonNames" type="button" class="btn btn-sm bg-light mx-2"
-            [ngClass]="(selectedBtn === buttonName) ? 'btn-outline-primary': 'btn-outline-dark'"
-            (click)="selectButton(buttonName)">{{buttonName}}</button>
-        |
+            <button *ngFor="let buttonName of buttonNames" type="button" class="btn btn-sm bg-light mx-2"
+                [ngClass]="(selectedBtn === buttonName) ? 'btn-outline-primary': 'btn-outline-dark'"
+                (click)="selectButton(buttonName)">{{buttonName}}</button>
+            |
 
-        <button type="button" class="btn btn-sm bg-light btn-outline-warning ml-2"
-            (click)="selectButton('chart')">Chart</button>
-    </span>
+            <button type="button" class="btn btn-sm bg-light btn-outline-warning ml-2"
+                (click)="selectButton('chart')">Chart</button>
+        </span>
 
-    <div id="viewerContent" class="mt-3 viewer-content">
-        <p *ngIf="selectedBtn === 'logs'">
-            <li class="list-unstyled" *ngFor="let log of logs">
-                <span>{{log}}</span>
-            </li>
-        </p>
+        <div id="viewerContent" class="mt-3 viewer-content">
+            <p *ngIf="selectedBtn === 'logs'">
+                <li class="list-unstyled" *ngFor="let log of logs">
+                    <span>{{log}}</span>
+                </li>
+            </p>
 
-        <div *ngIf="analysisInProgress" class="rotating-line ml-2">&nbsp;</div>
+            <div *ngIf="analysisInProgress" class="rotating-line ml-2">&nbsp;</div>
 
-        <p>
-            <li class="list-unstyled mb-2" *ngFor="let analysisItem of filteredAnalysisItems">
-                <span class="ml-3 pr-3" *ngFor="let value of analysisItem.data">{{value}}</span>
-            </li>
-        </p>
+            <p>
+                <li class="list-unstyled mb-2" *ngFor="let analysisItem of filteredAnalysisItems">
+                    <span class="ml-3 pr-3" *ngFor="let value of analysisItem.data">{{value}}</span>
+                </li>
+            </p>
 
-        <p>
-            <app-analyses-chart [pieChartLabels]="pieChartLabels" [pieChartData]="pieChartData"
-                *ngIf="selectedBtn === 'chart'">
-            </app-analyses-chart>
-        </p>
+            <p>
+                <app-analyses-chart [pieChartLabels]="pieChartLabels" [pieChartData]="pieChartData"
+                    *ngIf="selectedBtn === 'chart'">
+                </app-analyses-chart>
+            </p>
+        </div>
     </div>
+
+    <app-analysis-scan [analysisName]="name" *ngIf="selectedTab === 'systemScan'"></app-analysis-scan>
 </div>

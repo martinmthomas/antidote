@@ -11,6 +11,8 @@ export class TaskService {
 
     private baseUrl = `http://localhost:5000/api/task`;
     private analysesUrl = `${this.baseUrl}/analyses`;
+    private machinesUrl = `${this.baseUrl}/machines`;
+    private scanUrl = `${this.baseUrl}/scan`;
 
     private analyisStatusSubject: Subject<boolean> = new Subject<boolean>();
 
@@ -30,5 +32,18 @@ export class TaskService {
 
     getAnalysisData(): Observable<Analysis> {
         return this.http.get<Analysis>(`${this.analysesUrl}/latest`);
+    }
+
+    getMachines(): Observable<string[]> {
+        return this.http.get<string[]>(this.machinesUrl);
+    }
+
+    scan(analysisName: string, ipAddress: string) {
+        return this.http.post(this.scanUrl, {}, {
+            params: {
+                analysisName: analysisName,
+                ipAddress: ipAddress
+            }
+        });
     }
 }

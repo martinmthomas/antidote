@@ -1,0 +1,24 @@
+<div id="viewerContent" class="viewer-content row">
+    <div class="col-md-2">
+        <div class="machines-list">
+            <div class="input-group mb-1" *ngFor="let machine of machines">
+                <div class="input-group-text py-1 px-2"
+                    [class.bg-dark]="!!selectedMachine && selectedMachine.ipAddress === machine.value">
+                    <input type="checkbox" [(ngModel)]="machine.isChecked"> &nbsp;
+                    <a href="#" (click)="showLogs(machine.value)">
+                        <small>{{machine.value}}</small>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="ml-2 btn btn-sm btn-primary mt-3" (click)="scan()">Scan</button>
+    </div>
+    <div class="col-md-10" *ngIf="!!selectedMachine">
+        <div *ngFor="let log of selectedMachine.logs">
+            {{log}}
+        </div>
+
+        <div *ngIf="selectedMachine.inProgress" class="rotating-line ml-2">&nbsp;</div>
+    </div>
+</div>

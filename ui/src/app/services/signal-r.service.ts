@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as signalR from "@aspnet/signalr";
+import { SignalRArgument } from '../common/models/signal-r-argument';
 
 @Injectable({
   providedIn: 'root'
@@ -19,8 +20,11 @@ export class SignalRService {
       .catch(err => console.log(`Error in signalr connection: ${err}`));
   }
 
-  public GetNewLogItems(handleNewLogItems: (context: any, logs: string) => void, context: any) {
-    this.hubConnetion.on('NewLogItemCreated', (arg) => handleNewLogItems(context, arg));
+  public GetNewLogItems(category: string, handleNewLogItems: (context: any, argument: SignalRArgument<string>) => void, context: any) {
+    this.hubConnetion.on('NewLogItemCreated', (arg: SignalRArgument<string>) => {
+      if (arg.category === category)
+        handleNewLogItems(context, arg);
+    });
   }
 
   public StopConnection() {

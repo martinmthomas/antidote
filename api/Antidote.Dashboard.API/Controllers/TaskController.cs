@@ -1,11 +1,10 @@
-﻿using Antidote.Dashboard.API.Models.ScriptAggregate;
+﻿using Antidote.Dashboard.API.Models;
+using Antidote.Dashboard.API.Models.ScriptAggregate;
 using Antidote.Dashboard.API.Repositories;
 using Antidote.Dashboard.API.Services;
-using Antidote.Dashboard.API.SignalrHub;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
@@ -21,19 +20,16 @@ namespace Antidote.Dashboard.API.Controllers
         private readonly IConfiguration _configuration;
         private readonly IScriptService _scriptService;
         private readonly IAnalysisRepository _analysisRepository;
-        private readonly IHubContext<AnalysisHub> _hub;
 
         public TaskController(ILogger<TaskController> logger,
             IConfiguration configuration,
             IScriptService scriptService,
-            IAnalysisRepository analysisRepository,
-            IHubContext<AnalysisHub> hub)
+            IAnalysisRepository analysisRepository)
         {
             _logger = logger;
             _configuration = configuration;
             _scriptService = scriptService;
             _analysisRepository = analysisRepository;
-            _hub = hub;
         }
 
         [HttpPost]
@@ -45,7 +41,9 @@ namespace Antidote.Dashboard.API.Controllers
                 var analysisScriptOptions = _configuration.GetSection("AnalysisScriptOptions").Get<ScriptOptions>();
                 var script = new AnalysisScript(analysisScriptOptions, fileName);
 
-                await _scriptService.ExecuteAsync(script);
+                var output = await _scriptService.ExecuteAsync(script, new SignalRArgument<string> { Id = fileName, Category = "CreateAnalysis" });
+
+                await _analysisRepository.CreateAnalysisLog(script.SampleName, output);
 
                 return new OkResult();
             }
@@ -101,7 +99,9 @@ namespace Antidote.Dashboard.API.Controllers
                 var analysisScriptOptions = _configuration.GetSection("ScanScriptOptions").Get<ScriptOptions>();
                 var script = new ScanScript(analysisScriptOptions, analysisName, ipAddress, scannerName);
 
-                await _scriptService.ExecuteAsync(script);
+                var output = await _scriptService.ExecuteAsync(script, new SignalRArgument<string> { Id = ipAddress, Category = "ScanSystem" });
+
+                await _analysisRepository.CreateScanLogAsync(analysisName, ipAddress, output);
 
                 return new OkResult();
             }

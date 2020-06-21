@@ -11,7 +11,8 @@ namespace Antidote.Dashboard.API.Repositories
 {
     public class AnalysisRepository : IAnalysisRepository
     {
-        private const string LOGFILESUFFIX = "_log.txt";
+        private const string ANALYSISLOGFILESUFFIX = "_analysis_log.txt";
+        private const string SCANLOGFILESUFFIX = "_scan_log.txt";
         private const string REPORTFILESUFFIX = "_analysis.log";
         private const string SCANNERFILESUFFIX = "_scanner.exe";
 
@@ -24,9 +25,20 @@ namespace Antidote.Dashboard.API.Repositories
             _configuration = configuration;
         }
 
-        public async Task CreateLogFileAsync(string analysisName, List<string> logs)
+        public async Task CreateAnalysisLog(string analysisName, List<string> logs)
         {
-            var fileName = analysisName + LOGFILESUFFIX;
+            var fileName = analysisName + "_analysis" + ANALYSISLOGFILESUFFIX;
+            await CreateLogFileAsync(fileName, logs);
+        }
+
+        public async Task CreateScanLogAsync(string analysisName, string ipAddress, List<string> logs)
+        {
+            var fileName = analysisName + "_" + ipAddress + SCANLOGFILESUFFIX;
+            await CreateLogFileAsync(fileName, logs);
+        }
+
+        private async Task CreateLogFileAsync(string fileName, List<string> logs)
+        {
             var fullPath = Path.Combine(OutputFolder, fileName);
 
             var logToWrite = logs.Aggregate((s1, s2) => s1 + Environment.NewLine + s2);
@@ -41,7 +53,7 @@ namespace Antidote.Dashboard.API.Repositories
 
             var report = await GetReportDataAsync(GetReportFilePath(latestAnalysis));
 
-            var logs = await GetLogAsync(GetLogFilePath(latestAnalysis));
+            var logs = await GetLogAsync(GetAnalysisLogFilePath(latestAnalysis));
 
             return new Analysis
             {
@@ -53,7 +65,7 @@ namespace Antidote.Dashboard.API.Repositories
 
         private string GetReportFilePath(string analysisName) => GetFilePath(analysisName + REPORTFILESUFFIX);
 
-        private string GetLogFilePath(string analysisName) => GetFilePath(analysisName + LOGFILESUFFIX);
+        private string GetAnalysisLogFilePath(string analysisName) => GetFilePath(analysisName + ANALYSISLOGFILESUFFIX);
 
         private string GetScannerFilePath(string analysisName) => GetFilePath(analysisName + SCANNERFILESUFFIX);
 
@@ -61,13 +73,13 @@ namespace Antidote.Dashboard.API.Repositories
 
         private string GetLatestAnalysisName()
         {
-            var files = new DirectoryInfo(OutputFolder).GetFiles($"*{LOGFILESUFFIX}");
+            var files = new DirectoryInfo(OutputFolder).GetFiles($"*{ANALYSISLOGFILESUFFIX}");
             if (files == null || files.Count() == 0)
                 return null;
 
             return files
                 .OrderByDescending(f => f.LastWriteTime)
-                .Select(f => f.Name.Replace(LOGFILESUFFIX, "", StringComparison.OrdinalIgnoreCase))
+                .Select(f => f.Name.Replace(ANALYSISLOGFILESUFFIX, "", StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
         }
 

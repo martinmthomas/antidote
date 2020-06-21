@@ -11,6 +11,8 @@ import { HomeComponent } from './components/home/home.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ChartsModule } from 'ng2-charts';
 import { AnalysesChartComponent } from './components/analyses-chart/analyses-chart.component';
+import { AnalysisScanComponent } from './components/analysis-scan/analysis-scan.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -19,11 +21,13 @@ import { AnalysesChartComponent } from './components/analyses-chart/analyses-cha
     AnalysisDetailsComponent,
     TasksComponent,
     HomeComponent,
-    AnalysesChartComponent
+    AnalysesChartComponent,
+    AnalysisScanComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
+    FormsModule,
     NgbModule,
     HttpClientModule,
     ChartsModule

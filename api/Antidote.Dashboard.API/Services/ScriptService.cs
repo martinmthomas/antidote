@@ -1,5 +1,5 @@
-﻿using Antidote.Dashboard.API.Models.ScriptAggregate;
-using Antidote.Dashboard.API.Repositories;
+﻿using Antidote.Dashboard.API.Models;
+using Antidote.Dashboard.API.Models.ScriptAggregate;
 using Antidote.Dashboard.API.SignalrHub;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Generic;
@@ -10,20 +10,21 @@ namespace Antidote.Dashboard.API.Services
 {
     public class ScriptService : IScriptService
     {
-        private readonly IAnalysisRepository _analysisRepository;
         private readonly IHubContext<AnalysisHub> _hub;
 
-        private List<string> _logs;
+        private List<string> _shellOutput;
+        private SignalRArgument<string> _signalRArgument;
 
-        public ScriptService(IAnalysisRepository analysisRepository, IHubContext<AnalysisHub> hub)
+        public ScriptService(IHubContext<AnalysisHub> hub)
         {
-            _analysisRepository = analysisRepository;
             _hub = hub;
-            _logs = new List<string>();
+            _shellOutput = new List<string>();
         }
 
-        public async Task ExecuteAsync(Script script)
+        public async Task<List<string>> ExecuteAsync(Script script, SignalRArgument<string> signalRArgument)
         {
+            _signalRArgument = signalRArgument;
+
             var process = new Process()
             {
                 StartInfo = new ProcessStartInfo
@@ -46,14 +47,14 @@ namespace Antidote.Dashboard.API.Services
             if (!isSuccessful)
                 throw new System.Exception($"Aborting the script. Process did not complete in {script.TimeoutInMs} milliseconds.");
 
-            if (_logs.Count > 0)
-                await _analysisRepository.CreateLogFileAsync(script.SampleName, _logs);
+            return _shellOutput;
         }
 
         private async void ProcessConsoleOutput(object sender, DataReceivedEventArgs e)
         {
-            await _hub.Clients.All.SendAsync("NewLogItemCreated", e.Data);
-            _logs.Add(e.Data);
+            _signalRArgument.Data = e.Data;
+            await _hub.Clients.All.SendAsync("NewLogItemCreated", _signalRArgument);
+            _shellOutput.Add(e.Data);
         }
     }
 }
