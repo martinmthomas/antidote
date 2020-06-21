@@ -1,5 +1,5 @@
 <div id="viewerContent" class="viewer-content row">
-    <div class="col-md-2">
+    <div class="col-sm-4 col-md-2">
         <div class="machines-list">
             <div class="input-group mb-1" *ngFor="let machine of machines">
                 <div class="input-group-text py-1 px-2"
@@ -12,9 +12,12 @@
             </div>
         </div>
 
-        <button type="button" class="ml-2 btn btn-sm btn-primary mt-3" (click)="scan()">Scan</button>
+        <div *ngIf="!machines || machines.length === 0" class="text-warning">No machines found in the network!</div>
+
+        <button type="button" class="ml-2 btn btn-sm btn-primary mt-3" (click)="scan()"
+            [class.disabled]="!machines || machines.length === 0">Scan</button>
     </div>
-    <div class="col-md-10" *ngIf="!!selectedMachine">
+    <div *ngIf="!!selectedMachine">
         <div *ngFor="let log of selectedMachine.logs">
             {{log}}
         </div>

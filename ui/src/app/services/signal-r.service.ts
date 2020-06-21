@@ -20,7 +20,7 @@ export class SignalRService {
       .catch(err => console.log(`Error in signalr connection: ${err}`));
   }
 
-  public GetNewLogItems(category: string, handleNewLogItems: (context: any, argument: SignalRArgument<string>) => void, context: any) {
+  public handleNewLogItems(category: string, handleNewLogItems: (context: any, argument: SignalRArgument<string>) => void, context: any) {
     this.hubConnetion.on('NewLogItemCreated', (arg: SignalRArgument<string>) => {
       if (arg.category === category)
         handleNewLogItems(context, arg);

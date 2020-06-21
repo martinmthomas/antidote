@@ -49,5 +49,5 @@
         </div>
     </div>
 
-    <app-analysis-scan [analysisName]="name" *ngIf="selectedTab === 'systemScan'"></app-analysis-scan>
+    <app-analysis-scan [analysisName]="name" [hidden]="selectedTab !== 'systemScan'"></app-analysis-scan>
 </div>

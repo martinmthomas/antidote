@@ -40,7 +40,7 @@ export class AnalysisDetailsComponent implements OnInit {
         tap(progress => this.taskTriggered(progress)))
       .subscribe();
 
-    this.signalrService.GetNewLogItems('CreateAnalysis', this.handleNewLogItems, this);
+    this.signalrService.handleNewLogItems('CreateAnalysis', this.handleNewLogItems, this);
   }
 
   private taskTriggered(inProgress: boolean) {

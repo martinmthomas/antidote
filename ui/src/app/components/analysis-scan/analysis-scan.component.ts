@@ -34,7 +34,7 @@ export class AnalysisScanComponent implements OnInit {
       )
       .subscribe();
 
-    this.signalrService.GetNewLogItems('ScanSystem', this.handleNewLogItems, this);
+    this.signalrService.handleNewLogItems('ScanSystem', this.handleNewLogItems, this);
   }
 
   public handleNewLogItems(context: AnalysisScanComponent, argument: SignalRArgument<string>) {
@@ -76,6 +76,7 @@ export class AnalysisScanComponent implements OnInit {
 
   private scanMachine(ipAddress: string) {
     this.setScanProgress(ipAddress, true);
+
     this.taskService.scan(this.analysisName, ipAddress)
       .pipe(
         tap(_ => this.setScanProgress(ipAddress, false))
