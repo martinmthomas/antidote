@@ -7,7 +7,7 @@ namespace Antidote.Dashboard.API.Models.ScriptAggregate
     {
         private const string ScriptFileNameKey = "ScriptFileName";
 
-        public string ToolName => "python";
+        public string ToolName => "python3";
 
         public int TimeoutInMs { get; protected set; }
 
