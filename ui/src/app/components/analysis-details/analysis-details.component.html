@@ -9,7 +9,7 @@
 </ul>
 
 <div class="viewer">
-    <div class="Analysis" *ngIf="selectedTab === 'analysis'">
+    <div class="Analysis" [hidden]="selectedTab !== 'analysis'">
         <button type="button" class="btn btn-sm bg-light mr-2"
             [ngClass]="(selectedBtn === 'logs') ? 'btn-outline-primary': 'btn-outline-dark'"
             (click)="selectButton('logs')">Logs</button>
